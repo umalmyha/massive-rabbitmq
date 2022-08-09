@@ -1,0 +1,16 @@
+FROM golang:1.19-alpine AS build
+
+WORKDIR /app
+
+COPY . .
+
+RUN go mod download
+RUN CGO_ENABLED=0 go build -o consumer ./cmd/consumer/
+
+FROM alpine:latest
+
+WORKDIR /app
+
+COPY --from=build /app/consumer /app/
+
+CMD ["/app/consumer"]
